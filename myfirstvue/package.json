@@ -1,0 +1,20 @@
+{
+  "name": "myfirstvue",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.14.0",
+    "quasar": "^2.7.1",
+    "vue": "^3.2.36"
+  },
+  "devDependencies": {
+    "@quasar/vite-plugin": "^1.0.10",
+    "@vitejs/plugin-vue": "^2.3.3",
+    "sass": "^1.32.12",
+    "vite": "^2.9.9"
+  }
+}
