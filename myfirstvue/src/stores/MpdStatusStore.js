@@ -18,7 +18,9 @@ export const useMpdStatusStore = defineStore( 'MpdStatusStore', {
                     console.log(data);
                 })
         },
-
+        updateMpdStatus(newData) {
+            this.mpdstatus = newData;
+        },
     },
     created() {
         console.log("hello");

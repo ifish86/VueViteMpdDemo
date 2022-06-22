@@ -9,9 +9,9 @@ export function PiniaSocketPlugin(context) {
   
   socket.on('onchange', function(data){
       console.log(data);
-      /*if (data.status) {
+      if (data.status) {
           context.store.updateMpdStatus(data.status);
-      }*/
+      }
   });
   
   
