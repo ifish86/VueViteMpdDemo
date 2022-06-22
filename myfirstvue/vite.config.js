@@ -25,12 +25,9 @@ export default defineConfig({
             changeOrigin: true,
             secure: false
 
-            },'^/socket.io/.*': {
-            target: 'http://localhost:89/',
-            rewrite: path => path.replace('/socket.io', ''),
-            ws: true,
-            changeOrigin: true,
-            secure: false
+            },'/socket.io': {
+                target: 'http://localhost:89',
+                ws: false
 
             }
         },

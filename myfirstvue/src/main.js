@@ -11,10 +11,12 @@ import 'quasar/src/css/index.sass'
 // Import pinia stuff
 import { createPinia } from 'pinia'
 
+import { PiniaSocketPlugin } from './services/PiniaSocket.js'
+
 import App from './App.vue'
 
 
-const pinia = createPinia()
+const pinia = createPinia().use(PiniaSocketPlugin)
 const app = createApp(App)
 
 app.use(pinia)

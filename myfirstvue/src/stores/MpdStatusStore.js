@@ -18,6 +18,7 @@ export const useMpdStatusStore = defineStore( 'MpdStatusStore', {
                     console.log(data);
                 })
         },
+
     },
     created() {
         console.log("hello");
