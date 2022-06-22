@@ -26,7 +26,7 @@
         </q-linear-progress>
         </q-card>
 
-        <button @click="changeme">boom</button>
+        
 
         <ul>
         <li v-for="(item,index) in mpdstatus">{{ index }} == {{ item }}</li>
@@ -40,14 +40,45 @@
 </template>
 
 
+<script setup>
+    import { useMpdStatusStore } from "@/stores/MpdStatusStore.js";
+    import { storeToRefs } from 'pinia';
+    const { mpdstatus } = storeToRefs(useMpdStatusStore());
+    //import MpdSocket from './components/MpdSocket.vue'
+    //import { createSocketToMipod } from './MpdSocket.js'
+    console.log('App.vue setup');
+    import io from "socket.io-client"
+    
+    
+    
+</script>
 
 
 <script>
 import { ref } from 'vue';
+
+import VueSocketIO from 'vue-3-socket.io'
+
 export default {
   name: 'App',
+  
   data() {
+      /*
     return { mpdstatus:{repeat:false,random:false,single:false,consume:false,playlist:3,playlistlength:11,mixrampdb:0,state:"play",song:0,songid:1,time:163,elapsed:49,bitrate:1153,duration:163.120,audio:"44100:16:2",nextsong:1,nextsongid:2,audioSampleRate:44100,audioSampleDepth:16,audioChannels:"Stereo"}}
+    */
+      return {
+          socket: new VueSocketIO({
+              debug: true,
+              connection: 'http://192.168.0.190:3001'
+          })
+      }
+  },
+  
+  mounted() {
+      console.log('App.vue mounted');
+  },
+  unmounted() {
+      console.log('App.vue unmounted');
   },
   methods : {
     changeme()
@@ -56,8 +87,14 @@ export default {
     }
   },
   created() {
-    setInterval(function () { getRequest('/api/status', function(nd) {this.mpdstatus = nd}.bind(this)); }.bind(this), 150);
-  }
+    const mpdstatus = useMpdStatusStore();
+    //setInterval(function () { getRequest('/api/status', function(nd) {this.mpdstatus = nd}.bind(this)); }.bind(this), 1500);
+    setTimeout(function () { mpdstatus.updateStatus() }, 1000);
+    //createSocketToMipod();
+  },
+  
+  
+
 }
 
 function getRequest(url, callback){
@@ -75,6 +112,21 @@ function getRequest(url, callback){
     }.bind(callback)
     xmlHttpReqHw.send();
 }
+
+
+var address = window.location.href.replace('http://','')
+if (address.slice(-1) == '#') {
+	address=address.substr(0,address.length-1);
+	console.log(address);
+}
+
+var n=address.split('/');
+address=n[0];
+address = window.location.hostname;
+
+var glbWatchDog = 0;
+
+
 
 </script>
 
