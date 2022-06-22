@@ -56,7 +56,6 @@
 
 <script>
 import { ref } from 'vue';
-//import io from "socket.io-client";
 
 export default {
   name: 'App',
@@ -64,8 +63,7 @@ export default {
   data() {
     
     return { mpdstatus:{repeat:false,random:false,single:false,consume:false,playlist:3,playlistlength:11,mixrampdb:0,state:"play",song:0,songid:1,time:163,elapsed:49,bitrate:1153,duration:163.120,audio:"44100:16:2",nextsong:1,nextsongid:2,audioSampleRate:44100,audioSampleDepth:16,audioChannels:"Stereo"}}
-    
-   
+
   },
   
   mounted() {

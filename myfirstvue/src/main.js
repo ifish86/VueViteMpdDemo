@@ -25,6 +25,5 @@ app.mount('#app')
 
 
 
-//App.use(VueSocketIO, socketio('http://localhost/socket.io'), store);
 
 
