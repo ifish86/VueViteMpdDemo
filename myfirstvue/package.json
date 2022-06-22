@@ -10,10 +10,9 @@
     "@quasar/extras": "^1.14.0",
     "pinia": "^2.0.14",
     "quasar": "^2.7.1",
+    "socket.io-client": "^4.5.1",
     "store": "^2.0.12",
-    "vue": "^3.2.36",
-    "vue-3-socket.io": "^1.0.5",
-    "vue-socket.io": "^3.0.10"
+    "vue": "^3.2.36"
   },
   "devDependencies": {
     "@quasar/vite-plugin": "^1.0.10",

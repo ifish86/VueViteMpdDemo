@@ -2,7 +2,6 @@
 <script>
     import { ref } from 'vue';
     import io from "socket.io-client"
-    import VueSocketIO from 'vue-3-socket.io'
     
     export default {
         name: 'MpdSocket',

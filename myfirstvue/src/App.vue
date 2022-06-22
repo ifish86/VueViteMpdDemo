@@ -57,7 +57,6 @@
 <script>
 import { ref } from 'vue';
 
-import VueSocketIO from 'vue-3-socket.io'
 
 export default {
   name: 'App',
@@ -66,11 +65,17 @@ export default {
       /*
     return { mpdstatus:{repeat:false,random:false,single:false,consume:false,playlist:3,playlistlength:11,mixrampdb:0,state:"play",song:0,songid:1,time:163,elapsed:49,bitrate:1153,duration:163.120,audio:"44100:16:2",nextsong:1,nextsongid:2,audioSampleRate:44100,audioSampleDepth:16,audioChannels:"Stereo"}}
     */
+    /*
       return {
           socket: new VueSocketIO({
               debug: true,
-              connection: 'http://192.168.0.190:3001'
-          })
+              connection: 'http://'+location.host+':89/foo/bar/gee'
+          });
+      }
+      */
+      return {
+          socket : io('/')
+      
       }
   },
   
