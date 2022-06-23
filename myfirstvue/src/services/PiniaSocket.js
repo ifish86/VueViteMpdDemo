@@ -14,6 +14,10 @@ export function PiniaSocketPlugin(context) {
       }
   });
   
+  socket.on('connect', function () {
+      socket.emit('status');
+  });
+  
   
   console.log("Plugin Loaded !!!!");
   return { socket };
