@@ -5,36 +5,36 @@
 
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+
         <q-toolbar-title>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
-          </q-avatar>
-          Big F'ing Page - {{ mpdstatus.state }}
+           mipodUI
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
-    <q-page-container >
-       <q-page padding >
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+        <RouterView />
+    </q-drawer>
 
-        <input type="range" :value="mpdstatus.elapsed" min="0" :max="mpdstatus.duration">
-        <q-card >
-        <q-linear-progress size="50px" :value="mpdstatus.elapsed/mpdstatus.duration" color="accent" class="q-mt-sm">
-            <div class="absolute-full flex flex-center">
-                <q-badge color="white" text-color="accent" :label="mpdstatus.elapsed" />
-            </div>
-        </q-linear-progress>
-        </q-card>
-
-        
-
-        <ul>
-        <li v-for="(item,index) in mpdstatus">{{ index }} == {{ item }}</li>
-        </ul>
-        </q-page>
+    <q-page-container>
+      
     </q-page-container>
 
-    
+    <q-footer elevated class="bg-grey-8 text-white">
+      <q-toolbar>
+        <q-toolbar-title>
+          <q-img
+            :src="currentsong.cover"
+            :key="fill"
+            :ratio="1"
+            class="q-mt-md"
+            style="width: 50px; height: 50px; "
+          />
+          <div>Title {{ currentsong.path }}</div>
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-footer>
 
   </q-layout>
 </template>
@@ -44,12 +44,10 @@
     import { useMpdStatusStore } from "@/stores/MpdStatusStore.js";
     import { storeToRefs } from 'pinia';
     const { mpdstatus } = storeToRefs(useMpdStatusStore());
-    //import MpdSocket from './components/MpdSocket.vue'
-    //import { createSocketToMipod } from './MpdSocket.js'
+    const { currentsong } = storeToRefs(useMpdStatusStore());
+    import { RouterView } from "vue-router";
     console.log('App.vue setup');
-    //import io from "socket.io-client"
-    
-    
+    //console.log(useMpdStatusStore);
     
 </script>
 
@@ -61,8 +59,8 @@ export default {
   name: 'App',
   
   data() {
-    
-    return { mpdstatus:{repeat:false,random:false,single:false,consume:false,playlist:3,playlistlength:11,mixrampdb:0,state:"play",song:0,songid:1,time:163,elapsed:49,bitrate:1153,duration:163.120,audio:"44100:16:2",nextsong:1,nextsongid:2,audioSampleRate:44100,audioSampleDepth:16,audioChannels:"Stereo"}}
+    const leftDrawerOpen = ref(true);
+    return { mpdstatus:false,leftDrawerOpen, url:"/mm/mpd/album44.jpg"}
 
   },
   
@@ -73,21 +71,14 @@ export default {
       console.log('App.vue unmounted');
   },
   methods : {
-    changeme()
-    {
-      this.mpdstatus='Yo !';
-    },
-    async echo() {
-      console.log(this.socket.io.connected); // prints true
-    },
-    async echo() {
-      console.log(this.socket.io.error); // prints true
-    },
+    toggleLeftDrawer () {
+        this.leftDrawerOpen = !this.leftDrawerOpen
+    }
   },
   created() {
     const mpdstatus = useMpdStatusStore();
     //setInterval(function () { getRequest('/api/status', function(nd) {this.mpdstatus = nd}.bind(this)); }.bind(this), 1500);
-    setTimeout(function () { mpdstatus.updateStatus() }, 1000);
+    //setTimeout(function () { mpdstatus.updateStatus() }, 1000);
     //createSocketToMipod();
   },
   

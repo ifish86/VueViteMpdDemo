@@ -13,14 +13,20 @@ import { createPinia } from 'pinia'
 
 import { PiniaSocketPlugin } from './services/PiniaSocket.js'
 
+
 import App from './App.vue'
 
+/*
+ * .js or .ts extension optional
+ * */
+import router from "./router";
 
 const pinia = createPinia().use(PiniaSocketPlugin)
 const app = createApp(App)
 
 app.use(pinia)
 app.use(Quasar)
+app.use(router)
 app.mount('#app')
 
 

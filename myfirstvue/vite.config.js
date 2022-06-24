@@ -24,7 +24,12 @@ export default defineConfig({
             rewrite: path => path.replace('/api', ''),
             changeOrigin: true,
             secure: false
-
+            },
+            '^/mm/.*': {
+            target: 'http://localhost:80',
+            rewrite: path => path.replace('/mm', ''),
+            changeOrigin: true,
+            secure: false
             },
             '/socket.io': {
                 target: 'http://localhost:89',
