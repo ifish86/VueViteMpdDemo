@@ -21,6 +21,10 @@ export function getRequest(url, post, callback){
 }
 
 export function checkDataFormat(data) {
+    console.log(data.length);
+    if (data == undefined || data == null || data.length < 4) {
+        return false;
+    }
     try {
         JSON.parse(data);
     } catch(err) {
