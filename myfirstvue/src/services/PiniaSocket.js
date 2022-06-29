@@ -37,34 +37,13 @@ export function PiniaSocketPlugin(context) {
       context.store.updateStoreValues(0);
   });
   
-  getRequest('/api/status', false, function(nd) {context.store.updateMpdStatus(nd);});
-  getRequest('/api/current', false, function(nd) {context.store.updateMpdCurrent(nd);});
+  getRequest('/api/status', false, false, function(nd) {context.store.updateMpdStatus(nd);});
+  getRequest('/api/current', false, false, function(nd) {context.store.updateMpdCurrent(nd);});
+  getRequest('/api/lsinfo', JSON.stringify({path:"/"}), true, function (nd) {context.store.updateMpdLibPath(nd);});
   
   console.log("Plugin Loaded !!!!");
   return { socket };
 }
 
-/*
-function getRequest(url, callback){
-    console.log('getting:'+url);
-	var xmlHttpReq = false;
-    var self = this;
-    
-    xmlHttpReq = new XMLHttpRequest();
-    xmlHttpReq.open('GET', url, true);
-    xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xmlHttpReq.onreadystatechange = function() {
-        if (xmlHttpReq.readyState == 4) {
-            var newData;
-            if (checkDataFormat(xmlHttpReq.responseText)) {
-                newData = JSON.parse(xmlHttpReq.responseText);
-            } else {
-                console.log('[{mpdstatus:{error:'+JSON.stringify(xmlHttpReq.responseText)+'}}]');
-                newData = JSON.parse('[{"mpdstatus":{"error":'+JSON.stringify(xmlHttpReq.responseText)+'}}]');
-            }
-            callback(newData);
-        }
-    }.bind(callback)
-    xmlHttpReq.send();
-}*/
+
 

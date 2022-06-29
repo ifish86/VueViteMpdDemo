@@ -3,7 +3,14 @@
      <div class="q-pa bg-grey-10 text-white" style="max-width: 300px">
          <q-list dark separator>
             <q-item clickable v-for="(item,index) in menu" @click="updateNavRoutePath(item)">
-                <q-item-section>{{ item.label }}</q-item-section>
+                <q-item-section v-if="item.icon" avatar>
+                    <q-avatar>
+                        <span v-bind:class="item.icon" class="my-app-icon" ></span>
+                    </q-avatar>
+                </q-item-section>
+                <q-item-section>
+                    {{ item.label }}
+                </q-item-section>
             </q-item>
          </q-list>
      </div>
@@ -25,17 +32,17 @@
             menu:{
                 settings: {
                     label:"Settings",
-                    icon:"gear",
+                    icon:"icon-settings",
                     path:"\\settings"
                 },
                 status: {
                     label:"Status",
-                    icon:"gear",
+                    icon:"icon-status",
                     path:"\\status"
                 },
                 song: {
                     label:"Current Track",
-                    icon:"note",
+                    icon:"icon-song",
                     path:"\\currentSong"
                 }
             }

@@ -3,12 +3,18 @@
      <div class="q-pa bg-grey-10 text-white" style="max-width: 300px">
          <q-list dark separator>
             <q-item clickable v-for="(item,index) in menu" @click="updateNavRoutePath(item)">
-                <q-item-section>{{ item.label }}</q-item-section>
+                <q-item-section v-if="item.icon" avatar>
+                    <q-avatar>
+                        <span v-bind:class="item.icon" class="my-app-icon" ></span>
+                    </q-avatar>
+                </q-item-section>
+                <q-item-section>
+                    {{ item.label }}
+                </q-item-section>
             </q-item>
-         </q-list>
-         <q-list dark separator>
+
             <q-item clickable v-for="(item,index) in mpdstatus">
-                <q-item-section>{{ index }} == {{ item }}</q-item-section>
+                <q-item-section>{{ index }}: {{ item }}</q-item-section>
             </q-item>
          </q-list>
      </div>
@@ -36,7 +42,7 @@
             menu:{
                 settings: {
                     label:"Home",
-                    icon:"home",
+                    icon:"icon-home",
                     path:""
                 },
                 

@@ -3,21 +3,36 @@
 
 
 
-export function getRequest(url, post, callback){
+export function getRequest(url, post, headers, callback){
     console.log('getting:'+url);
 	var xmlHttpReq = false;
     var self = this;
     
     xmlHttpReq = new XMLHttpRequest();
-    xmlHttpReq.open('GET', url, true);
-    xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    if (post) {
+        xmlHttpReq.open('POST', url, true);
+    } else {
+        xmlHttpReq.open('GET', url, true);
+    }
+    
     xmlHttpReq.onreadystatechange = function() {
         if (xmlHttpReq.readyState == 4) {
             console.log(xmlHttpReq.response);
             callback(xmlHttpReq.response);
         }
     }.bind(callback)
-    xmlHttpReq.send();
+    
+    if (headers) {
+        xmlHttpReq.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+    } else {
+        xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    }
+    
+    if (post) {
+        xmlHttpReq.send(post);
+    } else {
+        xmlHttpReq.send();
+    }
 }
 
 export function checkDataFormat(data) {

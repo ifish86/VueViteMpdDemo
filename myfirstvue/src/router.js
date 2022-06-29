@@ -4,7 +4,7 @@ const routes = [
     {
         path: "/",
         name: "Home",
-        component: () => import("@/components/menuMain.vue"),
+        component: () => import("@/components/viewLibrary.vue"),
     },
     {
         name: "Settings",
