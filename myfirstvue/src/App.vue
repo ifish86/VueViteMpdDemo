@@ -9,10 +9,10 @@
         <q-toolbar-title>
            mipodUI
         </q-toolbar-title>
-        <q-breadcrumbs>
-          <q-breadcrumbs-el label="Home" icon="home" @click="gotToHome"/>
-          <q-breadcrumbs-el label="Components" icon="widgets" />
-          <q-breadcrumbs-el label="Breadcrumbs" />
+        <q-breadcrumbs clickable>
+          <q-breadcrumbs-el clickable v-for="(value, key) in libraryCrumbs" @click="libraryNavTo(key)">
+            {{ value.label }}
+          </q-breadcrumbs-el>
         </q-breadcrumbs>
       </q-toolbar>
     </q-header>
@@ -37,7 +37,7 @@
     <q-page-container>
         <RouterView />
     </q-page-container>
-
+    
     <q-footer elevated class="bg-grey-8 text-white">
       <q-toolbar class="q-pl-none">
         
@@ -116,10 +116,18 @@
     const { currentsong } = storeToRefs(useMpdStatusStore());
     const { currentdata } = storeToRefs(useMpdStatusStore());
     const { socket } = storeToRefs(useMpdStatusStore());
+    const { libraryCrumbs } = storeToRefs(useMpdStatusStore());
+    const { lsinfo } = storeToRefs(useMpdStatusStore());
     
     import { RouterView } from "vue-router";
     import router from "@/router.js";
     
+    import { getRequest } from '@/services/ajax.js'
+    
+    /*
+     * used to access mpdstatusstore actions
+     */
+    const mpdStore = useMpdStatusStore();
     
     console.log('App.vue setup');
     //console.log(useMpdStatusStore);
@@ -187,40 +195,50 @@ export default {
     },
     toggleRepeat () {
         if (this.mpdstatus.repeat) {
-            getRequest('/api/repeat/0', function(nd) {console.log(nd);});
+            getRequest('/api/repeat/0', false, false, function(nd) {console.log(nd);});
         } else {
-            getRequest('/api/repeat/1', function(nd) {console.log(nd);});
+            getRequest('/api/repeat/1', false, false, function(nd) {console.log(nd);});
         }
     },
     toggleShuffle () {
         if (this.mpdstatus.random) {
-            getRequest('/api/random/0', function(nd) {console.log(nd);});
+            getRequest('/api/random/0', false, false, function(nd) {console.log(nd);});
         } else {
-            getRequest('/api/random/1', function(nd) {console.log(nd);});
+            getRequest('/api/random/1', false, false, function(nd) {console.log(nd);});
         }
     },
     toggleConsume () {
         if (this.mpdstatus.consume) {
-            getRequest('/api/consume/0', function(nd) {console.log(nd);});
+            getRequest('/api/consume/0', false, false, function(nd) {console.log(nd);});
         } else {
-            getRequest('/api/consume/1', function(nd) {console.log(nd);});
+            getRequest('/api/consume/1', false, false, function(nd) {console.log(nd);});
         }
     },
     gotToHome () {
         console.log('home');
     },
     updateNavRoutePath(item) {
-            console.log(this.$router.path);
-            console.log(item.path);
-            router.push({
+        console.log(this.$router.path);
+        console.log(item.path);
+        router.push({
+            name: item.label,
+            params: { 
                 name: item.label,
-                params: { 
-                    name: item.label,
-                    isProfileLoaded: true
-                }
-            });
-            //this.$router.push({name: item.label, query:{item.path: null}});
-        },
+                isProfileLoaded: true
+            }
+        });
+        //this.$router.push({name: item.label, query:{item.path: null}});
+    },
+    libraryNavTo(item) {
+        var c = this.libraryCrumbs.length;
+        
+        
+        getRequest('/api/lsinfo', JSON.stringify({path:this.libraryCrumbs[item].path}), true, function (nd, post, url, headers) {this.mpdStore.updateMpdLibPath(nd, post, url, headers);}.bind(this));
+        
+        for (var i = item; i < c; ++i) {
+            this.libraryCrumbs.pop();
+        }
+    }
   },
   created() {
     const mpdstatus = useMpdStatusStore();
@@ -231,21 +249,6 @@ export default {
 
 }
 
-function getRequest(url, callback){
-	var xmlHttpReqHw = false;
-    var self = this;
-    
-    xmlHttpReqHw = new XMLHttpRequest();
-    xmlHttpReqHw.open('GET', url, true);
-    xmlHttpReqHw.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xmlHttpReqHw.onreadystatechange = function() {
-        if (xmlHttpReqHw.readyState == 4) {
-            //var newData = JSON.parse(xmlHttpReqHw.responseText);
-            callback(xmlHttpReqHw.responseText);
-        }
-    }.bind(callback)
-    xmlHttpReqHw.send();
-}
 
 
 var address = window.location.href.replace('http://','')
@@ -358,5 +361,18 @@ var glbWatchDog = 0;
     content: "\e630";
 }
 
+.icon-dir::before {
+    font-family: 'icomoon';
+    content: "\e92f";
+}
+
+.icon-playlist::before {
+    font-family: 'brystonadd';
+    content: "\e62f";
+}
+
+div.q-breadcrumbs {
+    cursor: default;
+}
 
 </style>

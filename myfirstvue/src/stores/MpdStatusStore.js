@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import io from 'socket.io-client';
 import { checkDataFormat, getRequest } from '@/services/ajax.js';
 import { stt } from '@/services/common.js';
+import { watch, toRef } from 'vue';
 
 export const useMpdStatusStore = defineStore( 'MpdStatusStore', {
     state: () => {
@@ -70,9 +71,20 @@ export const useMpdStatusStore = defineStore( 'MpdStatusStore', {
                 {
                     cover: coverPlaceHolder
                 },
+            libraryCrumbs: 
+                [
+                    {
+                    label: "Home",
+                    path: ""
+                    }
+                ]
             }
     },
+    
     actions: {
+        test() {
+            console.log('it works!');
+        },
         updateMpdStatus(newData) {
             if (checkDataFormat(newData)) {
                 newData = JSON.parse(newData);
@@ -141,7 +153,6 @@ export const useMpdStatusStore = defineStore( 'MpdStatusStore', {
                     } else {
                         this.currentdata.lineTwo = 'alt state';
                     }
-                    
                 }
             } else {
                 console.log('track data incomplete!');
@@ -169,17 +180,45 @@ export const useMpdStatusStore = defineStore( 'MpdStatusStore', {
             }
             
         },
-        updateMpdLibPath(data) {
-            console.log(data);
+        updateMpdLibPath(data, url, post, headers) {
+            console.log('updating lsinfo');
+            post = JSON.parse(post);
+            if (checkDataFormat(data)) {
+                console.log(this.libraryCrumbs.length);
+                if (post.path != "") {
+                    var temp = post['path'].split('/');
+                    this['libraryCrumbs'][this.libraryCrumbs.length]={"label": temp[temp.length-1],"path": post.path};
+                } else {
+                    this['libraryCrumbs']=[{label: "Home",path: ""}];
+                }
+                this.lsinfo.path = post.path;
+                this.lsinfo.values = JSON.parse(data);
+                for (var i = 0; this.lsinfo.values[i]; ++i) {
+                    if (this.lsinfo.values[i].directory) {
+                        var temp = this.lsinfo.values[i].directory.split('/');
+                        this.lsinfo.values[i].label=temp[temp.length-1];
+                        this.lsinfo.values[i].cover='/mm/cover.php?dir='+this.lsinfo.values[i].directory+'&type=album'
+                    }
+                }
+                console.log(this.lsinfo.values);
+            } else {
+                console.log('lsinfo failed!');
+            }
+        },
+        onFooChanged() {
+            console.log('foo changed');
         }
         
     },
+    
     created() {
         console.log("hello");
         
     }
     
+    
 });
+
 
 
 /*

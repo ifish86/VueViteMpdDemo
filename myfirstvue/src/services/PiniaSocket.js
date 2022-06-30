@@ -37,9 +37,9 @@ export function PiniaSocketPlugin(context) {
       context.store.updateStoreValues(0);
   });
   
-  getRequest('/api/status', false, false, function(nd) {context.store.updateMpdStatus(nd);});
-  getRequest('/api/current', false, false, function(nd) {context.store.updateMpdCurrent(nd);});
-  getRequest('/api/lsinfo', JSON.stringify({path:"/"}), true, function (nd) {context.store.updateMpdLibPath(nd);});
+  getRequest('/api/status', false, false, function(nd, post, url, headers) {context.store.updateMpdStatus(nd, post, url, headers);});
+  getRequest('/api/current', false, false, function(nd, post, url, headers) {context.store.updateMpdCurrent(nd, post, url, headers);});
+  getRequest('/api/lsinfo', JSON.stringify({path:""}), true, function (nd, post, url, headers) {context.store.updateMpdLibPath(nd, post, url, headers);});
   
   console.log("Plugin Loaded !!!!");
   return { socket };

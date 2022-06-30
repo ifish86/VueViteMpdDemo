@@ -17,10 +17,9 @@ export function getRequest(url, post, headers, callback){
     
     xmlHttpReq.onreadystatechange = function() {
         if (xmlHttpReq.readyState == 4) {
-            console.log(xmlHttpReq.response);
-            callback(xmlHttpReq.response);
+            callback(xmlHttpReq.response, url, post, headers);
         }
-    }.bind(callback)
+    }.bind(callback, post, url, headers)
     
     if (headers) {
         xmlHttpReq.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
