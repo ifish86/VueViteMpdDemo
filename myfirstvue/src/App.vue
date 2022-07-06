@@ -9,11 +9,36 @@
         <q-toolbar-title>
            mipodUI
         </q-toolbar-title>
-        <q-breadcrumbs clickable>
-          <q-breadcrumbs-el clickable v-for="(value, key) in libraryCrumbs" @click="libraryNavTo(key)">
-            {{ value.label }}
-          </q-breadcrumbs-el>
-        </q-breadcrumbs>
+        
+       
+        <div>
+            <q-btn-toggle
+                v-model="currentdata.infoView"
+                no-caps
+                rounded
+                unelevated
+                toggle-color="primary"
+                color="white"
+                text-color="primary"
+                :options="[
+                    {value: 'tileview', slot: 'tile'},
+                    {value: 'listview', slot: 'list'}
+                ]"
+            >
+                <template v-slot:tile>
+                <div class="row items-center no-wrap">
+                    <span class="my-app-icon icon-tile"></span>
+                </div>
+                </template>
+
+                <template v-slot:list>
+                <div class="row items-center no-wrap">
+                    <span class="my-app-icon icon-list"></span>
+                </div>
+                </template>
+            </q-btn-toggle>
+        </div>
+        
       </q-toolbar>
     </q-header>
 
@@ -34,7 +59,7 @@
       </div>
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container style="position: absolute;width:100%;">
         <RouterView />
     </q-page-container>
     
@@ -101,6 +126,11 @@
             <q-btn flat round dense class="q-mr-sm" @click="sendCmd('next')">
                 <span class="my-app-icon icon-next"></span>
             </q-btn>
+            
+            <q-btn v-if="currentPlaylist.length" flat round dense class="q-mr-sm" @click="showCurrentlyPlaying()">
+                <span class="my-app-icon icon-playlist"></span>
+                <q-badge floating color="red">{{ currentPlaylist.length }}</q-badge>
+            </q-btn>
         
       </q-toolbar>
     </q-footer>
@@ -118,6 +148,7 @@
     const { socket } = storeToRefs(useMpdStatusStore());
     const { libraryCrumbs } = storeToRefs(useMpdStatusStore());
     const { lsinfo } = storeToRefs(useMpdStatusStore());
+    const { currentPlaylist } = storeToRefs(useMpdStatusStore());
     
     import { RouterView } from "vue-router";
     import router from "@/router.js";
@@ -229,15 +260,16 @@ export default {
         });
         //this.$router.push({name: item.label, query:{item.path: null}});
     },
-    libraryNavTo(item) {
-        var c = this.libraryCrumbs.length;
-        
-        
-        getRequest('/api/lsinfo', JSON.stringify({path:this.libraryCrumbs[item].path}), true, function (nd, post, url, headers) {this.mpdStore.updateMpdLibPath(nd, post, url, headers);}.bind(this));
-        
-        for (var i = item; i < c; ++i) {
-            this.libraryCrumbs.pop();
-        }
+    
+    showCurrentlyPlaying() {
+        this.updateNavRoutePath({
+                    label:"Currently Playing",
+                    icon:"icon-playlist",
+                    path:"/currentPlaying"
+                });
+    },
+    toggleView(value) {
+        console.log('view:'+value);
     }
   },
   created() {
@@ -249,6 +281,17 @@ export default {
 
 }
 
+
+/*
+ * this.updateNavRoutePath({
+                        label:"Home",
+                        icon:"icon-home",
+                        path:""
+                    });
+ * 
+ * 
+ * 
+ */
 
 
 var address = window.location.href.replace('http://','')
@@ -361,6 +404,16 @@ var glbWatchDog = 0;
     content: "\e630";
 }
 
+.icon-tile::before {
+    font-family: 'brystonadd';
+    content: "\e634";
+}
+
+.icon-list::before {
+    font-family: 'brystonadd';
+    content: "\e632";
+}
+
 .icon-dir::before {
     font-family: 'icomoon';
     content: "\e92f";
@@ -371,8 +424,116 @@ var glbWatchDog = 0;
     content: "\e62f";
 }
 
+.icon-add::before {
+    font-family: 'brystonadd';
+    content: "\e622";
+}
+
+.icon-close::before {
+    font-family: 'brystonadd';
+    content: "\e626";
+}
+
 div.q-breadcrumbs {
     cursor: default;
 }
+
+</style>
+
+
+<style>
+    
+    div.itemTile {
+        position: relative;
+        display: block-inline;
+        width: 200px;
+        height: 200px;
+        cursor: pointer;
+        background: var(--q-secondary);
+        margin: 5px;
+        float: left;
+        transition-duration: 0.5s;
+    }
+    
+    div.listview.itemTile {
+        width: 100%;
+        height: 50px;
+        margin: 0;
+        border-bottom: solid grey 1px;
+    }
+    
+    div.itemTile span.my-app-icon {
+        font-size: 90px;
+        display: block;
+        width:100%;
+        text-align: center;
+        color: var(--vt-c-white-soft);
+        transition-duration: 0.5s;
+    }
+    
+    div.listview.itemTile span.my-app-icon {
+        font-size: 33px;
+        width:50px;
+    }
+    
+    div.itemTile span.label {
+        position:absolute;
+        bottom: 5px;
+        display: block;
+        width: 90%;
+        left: 5%;
+        text-align: center;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        color: var(--vt-c-white-soft);
+        border-radius: 5px;
+        background: var(--q-secondary);
+        
+    }
+    
+    div.itemTile span.detail {
+        display: none;
+    }
+    
+    div.listview.itemTile span.label.detail.secondary {
+        display: block;
+        top: 25px;
+    }
+    
+    div.listview.itemTile span.label.detail.aux {
+        position: absolute;
+        display: block;
+        right: 25px;
+        width: auto;
+        left: auto;
+        text-align: right;
+    }
+    
+    div.listview.itemTile span.label {
+        left: 55px;
+        text-align: left;
+        top: 5px;
+    }
+    
+    div.itemTile div.q-img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        transition-duration: 0.5s;
+    }
+    
+    div.listview.itemTile div.q-img {
+        width: 50px;
+        height: 50px;
+    }
+    
+     div.itemTile span.playing {
+        position: absolute;
+        top: 0;
+        color: var(--q-secondary);
+    }
 
 </style>

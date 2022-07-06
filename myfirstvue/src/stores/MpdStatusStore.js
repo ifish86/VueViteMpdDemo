@@ -60,7 +60,8 @@ export const useMpdStatusStore = defineStore( 'MpdStatusStore', {
                     lineOne: "",
                     lineTwo: "",
                     elapsedFormatted: "0:00",
-                    durationFormatted: "0:00"
+                    durationFormatted: "0:00",
+                    infoView: "tileview"
                 },
             lsinfo:
                 {
@@ -77,7 +78,11 @@ export const useMpdStatusStore = defineStore( 'MpdStatusStore', {
                     label: "Home",
                     path: ""
                     }
-                ]
+                ],
+            currentPlaylist:
+                [
+                
+                ],
             }
     },
     
@@ -90,6 +95,9 @@ export const useMpdStatusStore = defineStore( 'MpdStatusStore', {
                 newData = JSON.parse(newData);
                 if (newData.state !== undefined) {
                     console.log('updating status');
+                    if (newData.playlist !== undefined && newData.playlist != this.mpdstatus.playlist) {
+                        getRequest('/api/playlistinfo', false, false, function (nd, post, url, headers) {this.updateMpdPlaylist(nd, post, url, headers);}.bind(this));
+                    }
                     this.mpdstatus = newData;
                     
                     if (newData.state == 'stop') {
@@ -198,12 +206,42 @@ export const useMpdStatusStore = defineStore( 'MpdStatusStore', {
                         var temp = this.lsinfo.values[i].directory.split('/');
                         this.lsinfo.values[i].label=temp[temp.length-1];
                         this.lsinfo.values[i].cover='/mm/cover.php?dir='+this.lsinfo.values[i].directory+'&type=album'
+                    } else if (this.lsinfo.values[i].file) {
+                        var temp = this.lsinfo.values[i].file.split('/');
+                        var filename = temp.pop();
+                        this.lsinfo.values[i].cover='/mm/cover.php?dir='+temp.join('/')+'&type=album';
+                        if (!this.lsinfo.values[i].title) {
+                            this.lsinfo.values[i].title=filename;
+                        }
                     }
-                }
+                } 
                 console.log(this.lsinfo.values);
             } else {
                 console.log('lsinfo failed!');
             }
+        },
+        getMpdPlaylist(data, url, port, headers) {
+            getRequest('/api/playlistinfo', false, false, function (nd, post, url, headers) {this.updateMpdPlaylist(nd, post, url, headers);}.bind(this));
+        },
+        updateMpdPlaylist(data, url, post, headers) {
+            var temp = data.split("\n");
+            var c = -1;
+            //console.log(data);
+            this['currentPlaylist']=[];
+            for (var i = 0; temp[i]; ++i) {
+                var keyVal = temp[i].split(': ');
+                if (keyVal[0] && keyVal[0] == 'file') {
+                    ++c;
+                    this['currentPlaylist'][c] = {};
+                    var getcover = keyVal[1].split('/');
+                    var filename = getcover.pop();
+                    this['currentPlaylist'][c]['cover']='/mm/cover.php?dir='+getcover.join('/')+'&type=album';
+                }
+                if (keyVal.length > 1) {
+                    this['currentPlaylist'][c][keyVal[0]] = keyVal[1];
+                }
+            }
+            //console.log(this.currentPlaylist);
         },
         onFooChanged() {
             console.log('foo changed');

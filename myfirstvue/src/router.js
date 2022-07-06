@@ -5,6 +5,9 @@ const routes = [
         path: "/",
         name: "Home",
         component: () => import("@/components/viewLibrary.vue"),
+        meta: {
+            reload: true,
+        }
     },
     {
         name: "Settings",
@@ -21,7 +24,11 @@ const routes = [
         path: "/currentSong",
         component: () => import("@/components/menuCurrentSong.vue"),
     },
-  
+    {
+        name: "Currently Playing",
+        path: "/currentPlaying",
+        component: () => import("@/components/viewCurrent.vue"),
+    },
 ];
 
 const router = createRouter({
