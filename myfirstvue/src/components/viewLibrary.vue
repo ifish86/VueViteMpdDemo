@@ -134,8 +134,12 @@
             
         },
         searchForThis() {
-            console.log(this.currentdata.search);
-            getRequest('/api/search/any', JSON.stringify({search:this.currentdata.search}), true, function (nd, post, url, headers) {this.mpdStore.updateMpdLibPath(nd, post, url, headers, true);}.bind(this));
+            if (this.currentdata.search) {
+                getRequest('/api/search/any', JSON.stringify({search:this.currentdata.search}), true, function (nd, post, url, headers) {this.mpdStore.updateMpdLibPath(nd, post, url, headers, true);}.bind(this));
+            } else {
+                this.updateLsinfoStore(this.lsinfo.path);
+                this.libraryCrumbs.pop();
+            }
         },
         clearSearch() {
             this.currentdata.search = '';
