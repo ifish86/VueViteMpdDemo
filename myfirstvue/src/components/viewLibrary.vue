@@ -4,6 +4,20 @@
             <q-btn flat round dense class="q-mr-sm" @click="addAllThisToQueue()">
                 <span class="my-app-icon icon-add"></span>
             </q-btn>
+            
+            <q-btn flat round dense class="q-mr-sm" @click="addAllThisToQueuePlay()">
+                <span class="my-app-icon icon-add"></span>
+                <q-badge floating color=""><span class="my-app-icon icon-play badge"></span></q-badge>
+            </q-btn>
+            
+            <q-input dark round dense color="white" v-model="currentdata.search" class="q-ml-md" @keyup="searchForThis">
+                <template v-slot:prepend>
+                    <q-icon v-if="currentdata.search === ''" name="search" />
+                    <q-icon v-else name="clear" class="cursor-pointer" @click="clearSearch" />
+                </template>
+            </q-input>
+            
+                        
             <q-space/>
             <q-breadcrumbs clickable>
                 <q-breadcrumbs-el clickable v-for="(value, key) in libraryCrumbs" @click="libraryNavTo(key)">
@@ -29,7 +43,7 @@
         <span class="label" v-if="value.title">{{ value.title}}</span>
         
         <span class="label detail secondary" v-if="value.artist">{{ value.artist }}</span>
-        <span class="label detail aux" v-if="value.time">{{ value.time }}</span>
+        <span class="label detail aux" v-if="value.time">{{ stt(value.time) }}</span>
         
     </div>
     <div style="display; block; width: 100%; height: 60px"></div>
@@ -45,6 +59,7 @@
     const { MpdStatusStore } = storeToRefs(useMpdStatusStore());
     const { currentdata } = storeToRefs(useMpdStatusStore());
     const { libraryCrumbs } = storeToRefs(useMpdStatusStore());
+    const { socket } = storeToRefs(useMpdStatusStore());
     import { RouterView } from "vue-router";
     import router from "@/router.js";
     
@@ -58,6 +73,7 @@
     
     
     import { getRequest } from '@/services/ajax.js'
+    import { stt } from '@/services/common.js'
     
     /*
      * used to access mpdstatusstore actions
@@ -88,7 +104,7 @@
     methods : {
         goToDoWhatNext(item) {
             if (this.lsinfo.values[item].directory) {
-                getRequest('/api/lsinfo', JSON.stringify({path:this.lsinfo.values[item].directory}), true, function (nd, post, url, headers) {this.mpdStore.updateMpdLibPath(nd, post, url, headers);}.bind(this));
+                this.updateLsinfoStore(this.lsinfo.values[item].directory);
             } else if (this.lsinfo.values[item].playlist) {
                 console.log('is a playlist');
             } else if (this.lsinfo.values[item].file) {
@@ -99,19 +115,33 @@
         },
         libraryNavTo(item) {
             var c = this.libraryCrumbs.length;
-            
-            
-            getRequest('/api/lsinfo', JSON.stringify({path:this.libraryCrumbs[item].path}), true, function (nd, post, url, headers) {this.mpdStore.updateMpdLibPath(nd, post, url, headers);}.bind(this));
+            this.currentdata.search = '';
+            this.updateLsinfoStore(this.libraryCrumbs[item].path);
             
             for (var i = item; i < c; ++i) {
                 this.libraryCrumbs.pop();
             }
         },
+        updateLsinfoStore(path) {
+            getRequest('/api/lsinfo', JSON.stringify({path:path}), true, function (nd, post, url, headers) {this.mpdStore.updateMpdLibPath(nd, post, url, headers, false);}.bind(this));
+        },
         addAllThisToQueue() {
             console.log(this.lsinfo.path);
             getRequest('/api/add', JSON.stringify({entry:this.lsinfo.path}), true, function (nd, post, url, headers) {this.mpdStore.getMpdPlaylist(nd, post, url, headers);}.bind(this));
         },
-        
+        addAllThisToQueuePlay() {
+            getRequest('/api/add', JSON.stringify({entry:this.lsinfo.path}), true, function (nd, post, url, headers) {this.mpdStore.getMpdPlaylist(nd, post, url, headers);this.socket.emit('play');}.bind(this));
+            
+        },
+        searchForThis() {
+            console.log(this.currentdata.search);
+            getRequest('/api/search/any', JSON.stringify({search:this.currentdata.search}), true, function (nd, post, url, headers) {this.mpdStore.updateMpdLibPath(nd, post, url, headers, true);}.bind(this));
+        },
+        clearSearch() {
+            this.currentdata.search = '';
+            this.updateLsinfoStore(this.lsinfo.path);
+            console.log(this.lsinfo.path);
+        },
     },
     created() {
         console.log(this.menu)

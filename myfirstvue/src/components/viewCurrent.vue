@@ -10,7 +10,7 @@
             </q-btn>
         </q-toolbar>
     </div>
-    <div v-for="(value, key, index) in currentPlaylist" v-bind:class="currentdata.infoView" class="itemTile" @click="playThisTrack(key)" style="position:relative;">
+    <div v-for="(value, key, index) in currentPlaylist" v-bind:class="currentdata.infoView" class="itemTile" @click="playThisTrack(key, this)" style="position:relative;">
         <span v-if="value.directory" class="my-app-icon icon-dir"></span>
         <span v-if="value.playlist" class="my-app-icon icon-playlist"></span>
         <span v-if="value.file" class="my-app-icon icon-song"></span>
@@ -27,6 +27,10 @@
         <span class="label" v-if="value.Title">{{ value.Title}}</span>
         
         <span v-if="mpdstatus.song == key" class="my-app-icon icon-play playing"></span>
+        
+        <span class="label detail secondary" v-if="value.Artist">{{ value.Artist }}</span>
+        <span class="label detail aux" v-if="value.Time">{{ stt(value.Time) }}</span>
+        
     </div>
     <div style="display; block; width: 100%; height: 60px"></div>
 </template>
@@ -52,6 +56,7 @@
     
     
     import { getRequest } from '@/services/ajax.js'
+    import { stt } from '@/services/common.js'
     
     /*
      * used to access mpdstatusstore actions
@@ -74,9 +79,11 @@
         };
     },
     methods : {
-        playThisTrack(item) {
-            console.log(item);
+        playThisTrack(item, obj) {
+            //console.log(item);
             getRequest('/api/playidx/'+item, false, false, function(nd) {console.log(nd);});
+            obj.innerHtml='red';
+            console.log(obj);
         },
         clearPlayQueue() {
             this.sendCmd('clear');
@@ -107,7 +114,7 @@
         }
     },
     created() {
-        console.log(this.menu)
+        //console.log(this.menu)
     },
     
     

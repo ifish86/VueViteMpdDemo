@@ -28,6 +28,9 @@ const routes = [
         name: "Currently Playing",
         path: "/currentPlaying",
         component: () => import("@/components/viewCurrent.vue"),
+        meta: {
+            reload: true,
+        }
     },
 ];
 

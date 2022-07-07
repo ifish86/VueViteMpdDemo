@@ -7,11 +7,24 @@
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
         <q-toolbar-title>
-           mipodUI
+           <span v-if="!isMobile">mipodUI</span>
+           <div v-if="isMobile" class="column" style="height:60px;">
+                <div class="col">
+                    <q-item-label class="q-mt-sm">{{ currentdata.lineOne }}</q-item-label>
+                </div>
+                <div class="col">
+                    <q-item-label class="q-pt-sx">{{ currentdata.lineTwo }}</q-item-label>
+                </div>
+            </div>
         </q-toolbar-title>
         
+        <q-btn v-if="currentPlaylist.length" flat round dense class="q-mr-sm" @click="showCurrentlyPlaying()">
+            <span class="my-app-icon icon-playlist"></span>
+            <q-badge floating color="red">{{ currentPlaylist.length }}</q-badge>
+        </q-btn>
        
-        <div>
+       
+        <div v-if="!isMobile">
             <q-btn-toggle
                 v-model="currentdata.infoView"
                 no-caps
@@ -38,6 +51,8 @@
                 </template>
             </q-btn-toggle>
         </div>
+        
+        
         
       </q-toolbar>
     </q-header>
@@ -66,20 +81,20 @@
     <q-footer elevated class="bg-grey-8 text-white">
       <q-toolbar class="q-pl-none">
         
-            <q-img
-                :src="currentsong.cover"
-                :ratio="1"
-                class="lHh-mt-md"
-                style="width: 50px; height: 50px; "
-            />
-            <q-separator class="q-ml-xs q-mr-xs" dark vertical inset />
-            <div class="column" style="height:50px;">
-            <div class="col">
-                <q-item-label class="q-mt-sm">{{ currentdata.lineOne }}</q-item-label>
-            </div>
-            <div class="col">
-                <q-item-label class="q-pt-sx">{{ currentdata.lineTwo }}</q-item-label>
-            </div>
+        <q-img
+            :src="currentsong.cover"
+            :ratio="1"
+            class="lHh-mt-md"
+            style="width: 50px; height: 50px; "
+        />
+        <q-separator v-if="!isMobile" class="q-ml-xs q-mr-xs" dark vertical inset />
+            <div v-if="!isMobile" class="column" style="height:50px;">
+                <div class="col">
+                    <q-item-label class="q-mt-sm">{{ currentdata.lineOne }}</q-item-label>
+                </div>
+                <div class="col">
+                    <q-item-label class="q-pt-sx">{{ currentdata.lineTwo }}</q-item-label>
+                </div>
             </div>
          <q-separator class="q-ml-xs q-mr-xs" dark vertical inset />
              <q-circular-progress
@@ -99,19 +114,41 @@
             
         <q-space/>
             
-            <q-btn flat round dense class="q-mr-sm" @click="toggleConsume">
+            <q-btn-dropdown v-if="isMobile" stretch flat label="">
+                <q-list>
+                    <q-item clickable v-close-popup>
+                        <q-btn flat round dense class="q-mr-sm" @click="toggleConsume">
+                            <span v-bind:class="mpdstatus.consume.toString()" class="my-app-icon icon-consume"></span>
+                        </q-btn>
+                        
+                        <q-btn flat round dense class="q-mr-sm" @click="toggleRepeat">
+                            <span v-bind:class="mpdstatus.repeat.toString()" class="my-app-icon icon-loop"></span>
+                        </q-btn>
+                        
+                        <q-btn flat round dense class="q-mr-sm" @click="toggleShuffle">
+                            <span v-bind:class="mpdstatus.random.toString()" class="my-app-icon icon-shuffle"></span>
+                        </q-btn>
+                        
+                        <q-btn flat round dense class="q-mr-sm" @click="sendCmd('prev')">
+                            <span class="my-app-icon icon-previous"></span>
+                        </q-btn>
+                    </q-item>
+                </q-list>
+            </q-btn-dropdown>
+            
+            <q-btn v-if="!isMobile" flat round dense class="q-mr-sm" @click="toggleConsume">
                 <span v-bind:class="mpdstatus.consume.toString()" class="my-app-icon icon-consume"></span>
             </q-btn>
             
-            <q-btn flat round dense class="q-mr-sm" @click="toggleRepeat">
+            <q-btn v-if="!isMobile" flat round dense class="q-mr-sm" @click="toggleRepeat">
                 <span v-bind:class="mpdstatus.repeat.toString()" class="my-app-icon icon-loop"></span>
             </q-btn>
             
-            <q-btn flat round dense class="q-mr-sm" @click="toggleShuffle">
+            <q-btn v-if="!isMobile" flat round dense class="q-mr-sm" @click="toggleShuffle">
                 <span v-bind:class="mpdstatus.random.toString()" class="my-app-icon icon-shuffle"></span>
             </q-btn>
             
-            <q-btn flat round dense class="q-mr-sm" @click="sendCmd('prev')">
+            <q-btn v-if="!isMobile" flat round dense class="q-mr-sm" @click="sendCmd('prev')">
                 <span class="my-app-icon icon-previous"></span>
             </q-btn>
             
@@ -127,10 +164,7 @@
                 <span class="my-app-icon icon-next"></span>
             </q-btn>
             
-            <q-btn v-if="currentPlaylist.length" flat round dense class="q-mr-sm" @click="showCurrentlyPlaying()">
-                <span class="my-app-icon icon-playlist"></span>
-                <q-badge floating color="red">{{ currentPlaylist.length }}</q-badge>
-            </q-btn>
+            
         
       </q-toolbar>
     </q-footer>
@@ -149,7 +183,7 @@
     const { libraryCrumbs } = storeToRefs(useMpdStatusStore());
     const { lsinfo } = storeToRefs(useMpdStatusStore());
     const { currentPlaylist } = storeToRefs(useMpdStatusStore());
-    
+    const { isMobile } = storeToRefs(useMpdStatusStore());
     import { RouterView } from "vue-router";
     import router from "@/router.js";
     
@@ -160,6 +194,7 @@
      */
     const mpdStore = useMpdStatusStore();
     
+    console.log(isMobile);
     console.log('App.vue setup');
     //console.log(useMpdStatusStore);
     
@@ -204,6 +239,7 @@ export default {
   },
   mounted() {
       console.log('App.vue mounted');
+      this.toggleLeftDrawer();
   },
   unmounted() {
       console.log('App.vue unmounted');
@@ -249,7 +285,6 @@ export default {
         console.log('home');
     },
     updateNavRoutePath(item) {
-        console.log(this.$router.path);
         console.log(item.path);
         router.push({
             name: item.label,
@@ -262,6 +297,7 @@ export default {
     },
     
     showCurrentlyPlaying() {
+        console.log(navigator);
         this.updateNavRoutePath({
                     label:"Currently Playing",
                     icon:"icon-playlist",
@@ -270,7 +306,8 @@ export default {
     },
     toggleView(value) {
         console.log('view:'+value);
-    }
+    },
+    
   },
   created() {
     const mpdstatus = useMpdStatusStore();
@@ -316,6 +353,12 @@ var glbWatchDog = 0;
 .my-app-icon {
   font-weight: 400;
   font-size: 24px;
+}
+
+.my-app-icon.badge {
+  font-weight: 400;
+  font-size: 8px;
+
 }
 
 @font-face {
@@ -432,6 +475,11 @@ var glbWatchDog = 0;
 .icon-close::before {
     font-family: 'brystonadd';
     content: "\e626";
+}
+
+.icon-search::before {
+    font-family: 'brystonadd';
+    content: "\e62a";
 }
 
 div.q-breadcrumbs {

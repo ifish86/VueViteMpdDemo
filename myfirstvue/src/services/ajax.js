@@ -35,7 +35,7 @@ export function getRequest(url, post, headers, callback){
 }
 
 export function checkDataFormat(data) {
-    console.log(data.length);
+    //console.log(data.length);
     if (data == undefined || data == null || data.length < 4) {
         return false;
     }
