@@ -13,3 +13,6 @@ export function stt(secs) {
 	return minutes+':'+seconds;
 }
 
+export function coverPath(path) {
+    return 'http://192.168.0.190:3001/mm/cover.php?dir='+path+'&type=album';
+}

@@ -31,8 +31,15 @@
         <span v-if="value.playlist" class="my-app-icon icon-playlist"></span>
         <span v-if="value.file" class="my-app-icon icon-song"></span>
         
-        <q-img v-if="value.cover"
-            :src="value.cover"
+        <q-img v-if="value.directory"
+            :src="common.coverPath(value.directory)"
+            :ratio="1"
+            class="lHh-mt-md"
+            
+        />
+        
+        <q-img v-if="value.file"
+            :src="common.coverPath(value.file)"
             :ratio="1"
             class="lHh-mt-md"
             
@@ -43,7 +50,7 @@
         <span class="label" v-if="value.title">{{ value.title}}</span>
         
         <span class="label detail secondary" v-if="value.artist">{{ value.artist }}</span>
-        <span class="label detail aux" v-if="value.time">{{ stt(value.time) }}</span>
+        <span class="label detail aux" v-if="value.time">{{ common.stt(value.time) }}</span>
         
     </div>
     <div style="display; block; width: 100%; height: 60px"></div>
@@ -73,7 +80,7 @@
     
     
     import { getRequest } from '@/services/ajax.js'
-    import { stt } from '@/services/common.js'
+    import * as common from '@/services/common.js'
     
     /*
      * used to access mpdstatusstore actions
